@@ -14,6 +14,8 @@ function injectCSS(html, css) {
 	return html.replace('<!-- juice.inject -->', css);
 }
 
+const PLUGIN_NAME = 'gulp-plugin-concat';
+
 function gulpJuiceStream(conf) {
 	conf = conf || {};
 	// Creating a stream through which each file will pass

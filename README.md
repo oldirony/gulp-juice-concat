@@ -6,10 +6,13 @@ Check the Gulpfile included for an example.
 Or, just look here:
 
 ```
+var gulp = require('gulp');
+var juice = require('gulp-juice-concat');
+
 gulp.task('juice', function(){
   gulp.src(['./test/**/*.html', './test/**/*.css'])
     .pipe(juice({}))
-    .pipe(gulp.dest('./.build/bootloader'));
+    .pipe(gulp.dest('./.build'));
 });
 ```
 
@@ -22,3 +25,7 @@ your dev workflow is better off without it.
 
 I'd rather have a comment than just injecting it into the head because some people may prefer their emails don't
 have all of the regular markup. So, just do it this way. Maybe in the future I'll change it
+
+## Options
+
+You can pass in any options you would pass into juice in the configuration of the plugin. There are no other options at this time.
