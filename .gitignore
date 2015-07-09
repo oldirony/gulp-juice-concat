@@ -1,0 +1,6 @@
+.build
+*.tmp
+*.swp
+Thumbs.db
+desktop.ininode_modules
+node_modules

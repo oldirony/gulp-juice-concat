@@ -1,0 +1,29 @@
+{
+  "name": "gulp-juice-concat",
+  "version": "1.0.0",
+  "description": "Pipe a list of html and css files and get out html files with inline css",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "gulp": "^3.9.0",
+    "gulp-util": "^3.0.6",
+    "juice": "^1.3.2",
+    "through2": "^2.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "gulp test"
+  },
+  "keywords": [
+    "Gulp",
+    "Juice",
+    "Emails",
+    "Inline",
+    "CSS"
+  ],
+  "author": "Stephen Parente",
+  "license": "GPL-3.0",
+  "repository": "ingenuitydesign/gulp-juice-concat"
+}
