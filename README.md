@@ -16,6 +16,28 @@ gulp.task('juice', function(){
 });
 ```
 
+Additionally, the plugin can accept CSS files through the pipe. If a file is provided, it will be used before the plugin tries to look for it in the filesystem. This means you can pipe in virtual files that have been run through other gulp tasks, like so.
+
+```node
+var juice = require('gulp-juice');
+var gulp = require('gulp');
+var sass = require('gulp-sass');
+var gulpFilter = require('gulp-filter');
+
+gulp.task('juice', function(){
+
+  var sassFilter = gulpFilter('**/*.scss', {restore: true});
+
+  gulp.src(['./test/**/*.{scss,html}'])
+    .pipe(sassFilter)
+    .pipe(sass().on('error', sass.logError))
+    .pipe(sassFilter.restore)
+    .pipe(juice({}))
+    .pipe(gulp.dest('./build/bootloader'));
+
+});
+```
+
 ## Important Changes
 
 Previously you would enter in a CSS and HTML array and it detected the type based on the extension. This is no longer how it works. Now, you just enter the HTML array and it detects the styles you want by looking at the `<link>` and `<style>` tags in the HTML document provided. It resolves the path using the directory of the HTML as a base directory (maybe I will make it so this can be reconfigured) and reads those files and injects their CSS into the document.

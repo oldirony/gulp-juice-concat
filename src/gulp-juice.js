@@ -9,6 +9,7 @@ var cheerio = require('cheerio');
 var fs = require('fs');
 var _ = require('lodash');
 
+
 function externalCSSToInline(contents) {
 	return util.format("<style type='text/css'>%s</style>", contents);
 }
@@ -25,6 +26,7 @@ function gulpJuiceStream(conf) {
 	// Creating a stream through which each file will pass
 
 	var htmlFiles = [];
+	var cssFiles = [];
 
   var stream = function (file, enc, cb) {
     if (file.isNull()) {
@@ -38,9 +40,11 @@ function gulpJuiceStream(conf) {
 
   	if (path.extname(file.path) === '.html') {
     	htmlFiles.push(file);
+    } else if (path.extname(file.path) === '.css') {
+    	cssFiles.push(file);
     } else {
-    	return cb(null, file);
-    }
+			return cb(null, file);
+		}
 
   	return cb();
 
@@ -55,6 +59,24 @@ function gulpJuiceStream(conf) {
 			return htmlDir + '/' + relativePath;
 		}
 
+	};
+
+	var loadCSSFile = function (file, elem) {
+		var path = absolutePathFromRelativeHTTP(file.path, elem.attr('href'));
+		var data = '';
+
+		var cssCachedFile = _.findWhere(cssFiles, { path: path });
+
+		// Before we check the filesystem we want to use the Vinyl cache
+		if (cssCachedFile) {
+			data = cssCachedFile.contents.toString();
+		} else if (fs.existsSync(path)) {
+			data = fs.readFileSync(path, {  encoding: 'utf-8' } );
+		} else {
+			gutil.log('File at `%s` does not exist', path);
+		}
+
+		return data;
 	};
 
 	var endStream = function (cb) {
@@ -72,14 +94,7 @@ function gulpJuiceStream(conf) {
 
 					if (elem.is('link') && elem.attr('rel') == 'stylesheet' && elem.attr('href')) {
 						// Need to get the contents of the path
-						var path = absolutePathFromRelativeHTTP(file.path, elem.attr('href'));
-
-						if (fs.existsSync(path)) {
-							data = fs.readFileSync(path, {  encoding: 'utf-8' } );
-						} else {
-							gutil.log('File at `%s` does not exist', path);
-						}
-
+						data = loadCSSFile(file, elem);
 					} else {
 							data = elem.text();
 					}
@@ -95,6 +110,8 @@ function gulpJuiceStream(conf) {
 					contents = juice($.html(), conf);
 					file.contents = new Buffer(contents);
 				}
+
+				console.log(file);
 
 				this.push(file);
 
