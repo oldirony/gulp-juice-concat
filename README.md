@@ -5,7 +5,7 @@ Check the Gulpfile included for an example.
 
 Or, just look here:
 
-```
+```node
 var gulp = require('gulp');
 var juice = require('gulp-juice-concat');
 
@@ -22,8 +22,11 @@ Previously you would enter in a CSS and HTML array and it detected the type base
 
 This means there is no more inject tag
 
-Easy as that. Pipe HTML and CSS files in, or just make sure something has concerted the files into CSS,
-e.g. gulp-sass, and then it will inject it into an HTML file.
+Easy as that. Pipe HTML files in and it will find the css you're looking for (or try at least).
+
+If you're using a pre-processor, make sure the paths in the HTML files
+have been updated before you pipe it into the juicer. This thing takes
+CSS, not SCSS or LESS.
 
 ## Options
 
