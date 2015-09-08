@@ -5,59 +5,100 @@ var path = require('path');
 var PluginError = gutil.PluginError;
 var File = gutil.File;
 var util = require('util');
+var cheerio = require('cheerio');
+var fs = require('fs');
+var _ = require('lodash');
 
 function externalCSSToInline(contents) {
-	return util.format("<style>%s</style>", contents);
+	return util.format("<style type='text/css'>%s</style>", contents);
 }
 
 function injectCSS(html, css) {
-	return html.replace('<!-- juice.inject -->', css);
+	html('head').append(externalCSSToInline(css));
+	return html;
 }
 
-const PLUGIN_NAME = 'gulp-plugin-concat';
+var PLUGIN_NAME = 'gulp-plugin-concat';
 
 function gulpJuiceStream(conf) {
 	conf = conf || {};
 	// Creating a stream through which each file will pass
 
-	var css = [],
-		htmlFiles = [];
+	var htmlFiles = [];
 
-    var stream = function (file, enc, cb) {
-	    if (file.isNull()) {
-        	this.push(file); // Do nothing if no contents
-	    	return cb();
-	    }
-
-	    if (file.isStream()) {
-	    	return cb(new PluginError(PLUGIN_NAME, 'Streaming not supported'));
-	    }
-
-    	if (path.extname(file.path) === '.html') {
-	    	htmlFiles.push(file);
-	    } else if (path.extname(file.path) === '.css') {
-	    	css.push(externalCSSToInline(file.contents.toString()));
-	    } else {
-	    	return cb(null, file);
-	    }
-
+  var stream = function (file, enc, cb) {
+    if (file.isNull()) {
+      	this.push(file); // Do nothing if no contents
     	return cb();
+    }
+
+    if (file.isStream()) {
+    	return cb(new PluginError(PLUGIN_NAME, 'Streaming not supported'));
+    }
+
+  	if (path.extname(file.path) === '.html') {
+    	htmlFiles.push(file);
+    } else {
+    	return cb(null, file);
+    }
+
+  	return cb();
 
 
 	};
 
+	var absolutePathFromRelativeHTTP = function (htmlPath, relativePath) {
+		var htmlDir = path.dirname(htmlPath);
+		if (/^\//.test(relativePath)) {
+			return htmlDir + relativePath;
+		} else {
+			return htmlDir + '/' + relativePath;
+		}
+
+	};
+
 	var endStream = function (cb) {
-		var allCSS = css.join('');
+
 		if (htmlFiles.length > 0) {
-			for (var x in htmlFiles) {
-				var file = htmlFiles[x];
+			_.forEach(htmlFiles, function(file) {
 				var contents = file.contents.toString();
-				contents = injectCSS(contents, css);
-				contents = juice(contents, conf);
-				file.contents = new Buffer(contents);
+				var css = [];
+
+				// Cheerio this and get the style tags
+				var $ = cheerio.load(contents);
+				$('link,style').each(function() {
+					var data;
+					var elem = $(this);
+
+					if (elem.is('link') && elem.attr('rel') == 'stylesheet' && elem.attr('href')) {
+						// Need to get the contents of the path
+						var path = absolutePathFromRelativeHTTP(file.path, elem.attr('href'));
+
+						if (fs.existsSync(path)) {
+							data = fs.readFileSync(path, {  encoding: 'utf-8' } );
+						} else {
+							gutil.log('File at `%s` does not exist', path);
+						}
+
+					} else {
+							data = elem.text();
+					}
+
+					$(this).remove();
+
+					css.push(data);
+
+				});
+
+				if (css.length > 0) {
+					$ = injectCSS($, css.join(''));
+					contents = juice($.html(), conf);
+					file.contents = new Buffer(contents);
+				}
 
 				this.push(file);
-			}
+
+			}.bind(this));
 		}
 		cb();
 	};

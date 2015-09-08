@@ -10,21 +10,20 @@ var gulp = require('gulp');
 var juice = require('gulp-juice-concat');
 
 gulp.task('juice', function(){
-  gulp.src(['./test/**/*.html', './test/**/*.css'])
+  gulp.src(['./test/**/*.html'])
     .pipe(juice({}))
     .pipe(gulp.dest('./.build'));
 });
 ```
 
+## Important Changes
+
+Previously you would enter in a CSS and HTML array and it detected the type based on the extension. This is no longer how it works. Now, you just enter the HTML array and it detects the styles you want by looking at the `<link>` and `<style>` tags in the HTML document provided. It resolves the path using the directory of the HTML as a base directory (maybe I will make it so this can be reconfigured) and reads those files and injects their CSS into the document.
+
+This means there is no more inject tag
+
 Easy as that. Pipe HTML and CSS files in, or just make sure something has concerted the files into CSS,
-e.g. gulp-sass, and then it will inject it into an HTML file. It looks for the HTML comment <!-- juice.inject -->
-as the placement point for the `<style>` tags. 
-
-If you don't include one, it will still juice the HTML. So, no need to include external CSS files if you find
-your dev workflow is better off without it.
-
-I'd rather have a comment than just injecting it into the head because some people may prefer their emails don't
-have all of the regular markup. So, just do it this way. Maybe in the future I'll change it
+e.g. gulp-sass, and then it will inject it into an HTML file.
 
 ## Options
 
