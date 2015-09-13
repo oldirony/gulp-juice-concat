@@ -111,8 +111,6 @@ function gulpJuiceStream(conf) {
 					file.contents = new Buffer(contents);
 				}
 
-				console.log(file);
-
 				this.push(file);
 
 			}.bind(this));
