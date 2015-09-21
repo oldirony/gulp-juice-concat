@@ -7,6 +7,8 @@ Pipe a list of Vinyl objects and get out some inline CSS
 npm install gulp-juice-concat
 ```
 
+## How to get it working
+
 Check the Gulpfile included for an example.
 
 Or, just look here:
@@ -46,11 +48,15 @@ gulp.task('juice', function(){
 
 ## Important Changes
 
-Previously you would enter in a CSS and HTML array and it detected the type based on the extension. This is no longer how it works. Now, you just enter the HTML array and it detects the styles you want by looking at the `<link>` and `<style>` tags in the HTML document provided. It resolves the path using the directory of the HTML as a base directory (maybe I will make it so this can be reconfigured) and reads those files and injects their CSS into the document.
+Instead of adding an inject tag, you just enter the HTML array of virtual files and it detects the styles you want by looking at the `<link>` and `<style>` tags in the HTML document provided. It resolves the path using the directory of the HTML as a base directory (maybe I will make it so this can be reconfigured) and reads those files and injects their CSS into the document.
+
+If SCSS or LESS or any other preprocessor has created a virtual CSS file, it will look within those virtual files before then defaulting to look at the regular filesystem. If the file is not found, it will fail with an error.
 
 This means there is no more inject tag
 
 Easy as that. Pipe HTML files in and it will find the css you're looking for (or try at least).
+
+**NOTE**
 
 If you're using a pre-processor, make sure the paths in the HTML files
 have been updated before you pipe it into the juicer. This thing takes
