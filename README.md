@@ -1,6 +1,12 @@
 # gulp-juice-concat
 Pipe a list of Vinyl objects and get out some inline CSS
 
+## Installation
+
+```bash
+npm install gulp-juice-concat
+```
+
 Check the Gulpfile included for an example.
 
 Or, just look here:
