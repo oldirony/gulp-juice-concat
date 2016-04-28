@@ -21,8 +21,15 @@ function injectCSS(html, css) {
 
 var PLUGIN_NAME = 'gulp-plugin-concat';
 
-function gulpJuiceStream(conf) {
+function gulpJuiceStream(conf, globalSettings) {
+	globalSettings = globalSettings || {};
 	conf = conf || {};
+
+	// Looping through the globalSettings param to set global juice settings
+	_.forEach(globalSettings, function(value, key){
+		juice[key] = value;
+	});
+
 	// Creating a stream through which each file will pass
 
 	var htmlFiles = [];
