@@ -1,5 +1,5 @@
 var through = require('through2');
-var juice = require('juice');
+var juice = require('juice-enhanced');
 var gutil = require('gulp-util');
 var path = require('path');
 var PluginError = gutil.PluginError;
