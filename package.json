@@ -1,6 +1,6 @@
 {
   "name": "gulp-juice-concat-enhanced",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Pipe a list of html and css files and get out html files with inline css",
   "main": "index.js",
   "directories": {
