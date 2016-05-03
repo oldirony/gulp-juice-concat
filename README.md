@@ -4,7 +4,7 @@ Pipe a list of Vinyl objects and get out some inline CSS
 ## Installation
 
 ```bash
-npm install gulp-juice-concat
+npm install gulp-juice-concat-enhanced
 ```
 
 ## How to get it working
